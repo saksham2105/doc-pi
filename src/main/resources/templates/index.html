@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Docpi</title>
+    <style>
+        body {
+           margin: 0;
+           padding: 0;
+           font-family: Arial, sans-serif;
+       }
+       .search-container {
+           background-color: #354A5F;
+           padding: 10px 20px;
+           display: flex;
+           align-items: center;
+       }
+       .search-text {
+           color: white;
+           font-size: 24px;
+           margin-right: 20px;
+       }
+       .search-input {
+           flex: 1;
+           padding: 8px;
+           border: none;
+           border-radius: 4px;
+       }
+       .search-button {
+           background-color: #2980B9;
+           color: white;
+           border: none;
+           border-radius: 4px;
+           padding: 8px 16px;
+           cursor: pointer;
+       }
+        .info {
+          background-color: #f5f5f5;
+          padding: 20px;
+        }
+        /* accordion.css */
+.accordion {
+    border: 1px solid #ccc;
+}
+
+.accordion-item {
+    border-bottom: 1px solid #ccc;
+}
+
+.accordion-header {
+    background-color: #f5f5f5;
+    padding: 10px;
+    cursor: pointer;
+}
+
+.accordion-content {
+    display: none;
+    padding: 10px;
+}
+.btn {
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 5px 10px;
+            cursor: pointer;
+            margin-right: 5px;
+            width: 90px; /* Adjust the width */
+            text-align: center;
+        }
+        .table-cell {
+            padding-right: 10px; /* Adjust the padding as needed */
+        }
+        .styled-table {
+        border:none;
+    border-collapse: collapse;
+    margin: 25px 0;
+    font-size: 0.9em;
+    font-family: sans-serif;
+    min-width: 600px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+}
+        .styled-table th,
+.styled-table td {
+    padding: 12px 15px;
+}
+        .styled-table tbody tr {
+    border-bottom: 1px solid #dddddd;
+}
+
+.styled-table tbody tr:nth-of-type(even) {
+    background-color: #f3f3f3;
+}
+
+.styled-table tbody tr:last-of-type {
+    border-bottom: 2px solid #009879;
+}
+        .styled-table tbody tr.active-row {
+    font-weight: bold;
+    color: #009879;
+}
+        input {
+    border: 5px solid white;
+    -webkit-box-shadow:
+      inset 0 0 8px  rgba(0,0,0,0.1),
+            0 0 16px rgba(0,0,0,0.1);
+    -moz-box-shadow:
+      inset 0 0 8px  rgba(0,0,0,0.1),
+            0 0 16px rgba(0,0,0,0.1);
+    box-shadow:
+      inset 0 0 8px  rgba(0,0,0,0.1),
+            0 0 16px rgba(0,0,0,0.1);
+    padding: 15px;
+    background: rgba(255,255,255,0.5);
+    margin: 0 0 10px 0;
+}
+         .response-container {
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 400px;
+            padding: 20px;
+        }
+
+        .response-title {
+            font-size: 24px;
+            color: #333333;
+            margin-bottom: 10px;
+        }
+
+        .response-content {
+            font-size: 16px;
+            color: #666666;
+            line-height: 1.5;
+        }
+
+        .response-content pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            background-color: #f9f9f9;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+
+        .response-content code {
+            font-family: Consolas, monospace;
+            color: #333333;
+        }
+        /* Reset some default textarea styles */
+textarea {
+    resize: none; /* Prevent resizing */
+    border: none; /* Remove border */
+    outline: none; /* Remove outline */
+    background: none; /* Remove default background */
+    font-family: inherit; /* Inherit font from parent */
+
+    /* Add padding and box-shadow for a nice look */
+    padding: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Style the container */
+.textarea-container {
+    display: flex;
+    height: 50vh; /* Adjust as needed */
+    background-color: #f7f7f7;
+}
+
+/* Style the textarea to make it visually appealing */
+.beautiful-textarea {
+    width: 400px;
+    height: 200px;
+    border-radius: 10px;
+    background-color: #fff;
+    color: #333;
+    font-size: 14px;
+    line-height: 1.5;
+    transition: box-shadow 0.3s;
+    white-space: pre-wrap;
+    word-break: break-all;
+
+}
+
+/* Add hover effect */
+.beautiful-textarea:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+    </style>
+    <script>
+        // accordion.js
+document.addEventListener("DOMContentLoaded", function() {
+    const accordionHeaders = document.querySelectorAll(".accordion-header");
+    accordionHeaders.forEach(header => {
+        header.addEventListener("click", function() {
+            const content = this.nextElementSibling;
+            if (content.style.display === "block") {
+                content.style.display = "none";
+            } else {
+                content.style.display = "block";
+            }
+        });
+    });
+});
+
+function tryOut(e) {
+     try {
+             const currentUrl = window.location.href;
+        const urlObject = new URL(currentUrl);
+        const baseUrl = `${urlObject.protocol}//${urlObject.hostname}:${urlObject.port}`;
+        const controllerName = e.getAttribute("data-controller-name");
+        const apiName = e.getAttribute("data-api-name");
+        const apiType = e.getAttribute("data-api-type");
+        const apiEndpoint = e.getAttribute("data-api-endpoint");
+        let fullPath = baseUrl + apiEndpoint;
+        const id = controllerName + "#" + apiName;
+        const tbody = document.getElementById(id);
+        let rows;
+        if (tbody) {
+                rows = tbody.querySelectorAll("tr"); // Select all child elements
+        }
+        const textarea = document.getElementById(id+"textarea");
+        let payload = textarea ? textarea.value : "";
+
+    // Loop through and log each child element
+    let queryString = "";
+    if (rows) {
+      queryString += "?";
+      rows.forEach(row => {
+       const columns = row.querySelectorAll("td");
+       columns.forEach(column => {
+         const inputElement = column.querySelector("input[type='text']");
+         if (inputElement) {
+           queryString += "=" + inputElement.value + "&";
+         } else {
+            queryString += column.innerHTML;
+         }
+        });
+      });
+       queryString = queryString.slice(0, -1);
+       fullPath = fullPath + queryString;
+    }
+
+       const xhr = new XMLHttpRequest();
+
+       xhr.open(apiType, fullPath, true);
+       xhr.onreadystatechange = function () {
+         if (xhr.readyState === 4 && xhr.status === 200) {
+            const response = xhr.responseText;
+            if (payload.length == 0 && apiType == "GET") {
+               document.getElementById(controllerName + "#" + apiName + "url").href = fullPath;
+            } else {
+              document.getElementById(controllerName + "#" + apiName + "url").innerHTML = "";
+            }
+            document.getElementById(controllerName + "#" + apiName + "response").innerHTML = response;
+            document.getElementById(controllerName + "#" + apiName + "url").style.visibility = 'visible';
+        }
+     };
+     if (payload.length != 0) {
+       xhr.setRequestHeader("Content-Type", "application/json");
+       xhr.send(payload);
+     } else {
+       xhr.send();
+     }
+     } catch (error) {
+       alert(error);
+     }
+    }
+
+    </script>
+</head>
+<body>
+<div class="navbar">
+    <div class="search-container">
+        <div class="search-text">DocPi</div>
+        <input type="text" class="search-input" placeholder="Search...">
+        <button class="search-button">Search</button>
+    </div>
+</div>
+
+<div class="info">
+    <hgroup>
+        <h1 th:text="${heading}">Welcome to Our API</h1>
+    </hgroup>
+</div>
+
+<div class="accordion">
+<div th:each="controller : ${controllers}" class="controller-section">
+        <h2 th:text="${controller.name}" class="accordion-header">Controller Name</h2>
+       <div class="accordion">
+        <div th:each="api : ${controller.apis}" class="accordion-item" th:style="'border: 1px solid ' + ${api.color}">
+                <div class="accordion-header">
+                    <table>
+                        <tbody>
+                        <tr>
+                            <div style="">
+                            <td class="table-cell"><button th:style="'background-color: ' + ${api.color}" th:text="${api.type}" class="btn">POST</button></td>
+                            <td><h3 th:text="${api.endpoint}">Api Name</h3></td>
+                            <td style="padding-left:150px;"> <button type="button" style="border:1px solid red;background-color:white;color:red;"
+                                         th:attr="data-controller-name=${controller.name}, data-api-name=${api.name}, data-api-endpoint=${api.endpoint}, data-api-type=${api.type}"
+                                         onclick="event.stopPropagation(); tryOut(this);"  class="btn">
+                                <span th:text="${'Try It Out'}"></span>
+                            </button></td>
+                            </div>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            <div class="accordion-content">
+
+                <!-- Division for making server request -->
+                <div class="server-request-division">
+                    <table class="styled-table" th:if="${api.parameters.size() > 0}">
+                        <thead>
+                        <tr>
+                            <th>Parameter Name</th>
+                            <th>
+                                Value
+                               </th>
+                        </tr>
+                        </thead>
+                        <tbody th:id="${controller.name + '#' + api.name}">
+                        <tr th:each="parameter : ${api.parameters}" class="active-row">
+                            <td th:id="${controller.name + '#' + api.name + '#' + parameter.name}" th:text="${parameter.name}">Parameter Name</td>
+                            <td>
+                                <input type="text" th:id="${controller.name + '#' + api.name + '#' + parameter.name + '#text'}" placeholder="Your parameter value..." style="width: 300px;"/>
+                            </td>
+                        </tr>
+
+                        <!-- and so on... -->
+                        </tbody>
+                    </table>
+
+                    <div class="textarea-container" th:if="${api.payload.length() > 0}">
+                        <textarea style="overflow-wrap: break-word;word-wrap: break-word;" class="beautiful-textarea" th:text="${api.payload}" th:id="${controller.name + '#' + api.name + 'textarea'}">
+                            Payload
+                        </textarea>
+                    </div>
+                </div>
+
+                <div class="response-title" style="padding-left:5px;">
+                    <span>Api Response for </span>
+                    <a th:id="${controller.name + '#' + api.name + 'url'}" style="visibility:hidden;">Link</a>
+                </div>
+                <div class="response-container">
+                    <div class="response-content" th:id="${controller.name + '#' + api.name + 'response'}">
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        </div>
+      </div>
+    </div>
+</div>
+
+
+</body>
+</html>
