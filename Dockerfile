@@ -1,5 +1,5 @@
 # Use an official OpenJDK runtime as a parent image
-FROM --platform=linux/amd64 openjdk:17-jdk-alpine
+FROM --platform=linux/amd64 amazoncorretto:17.0.7-alpine
 
 # Set the working directory to /app
 WORKDIR /app
@@ -8,7 +8,7 @@ WORKDIR /app
 COPY target/docpi-0.0.1-SNAPSHOT.jar /app/docpi.jar
 
 # Expose the port your app runs on
-EXPOSE 8080
 
 # Specify the command to run on container start
-CMD ["java", "-jar", "docpi.jar"]
+EXPOSE 8080
+ENTRYPOINT [ "java", "-jar", "/app/app.jar" ]
